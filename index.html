@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Monitor de IPs</title>
+    <style>
+        body { font-family: Arial, sans-serif; background:#111; color:#eee; }
+        h1 { text-align:center; }
+        table { border-collapse: collapse; width: 90%; margin: 20px auto; }
+        th, td { border:1px solid #444; padding:8px; text-align:center; }
+        th { background:#222; }
+        tr:nth-child(even){ background:#1a1a1a; }
+        button { padding:10px 15px; margin:10px; cursor:pointer; }
+    </style>
+</head>
+<body>
+
+<h1>IPs que acessaram o site</h1>
+<div style="text-align:center;">
+    <button onclick="loadIPs()">Atualizar</button>
+</div>
+
+<table id="ipTable">
+    <tr>
+        <th>IP</th>
+        <th>Requests</th>
+        <th>Primeiro acesso</th>
+        <th>Último acesso</th>
+    </tr>
+</table>
+
+<script>
+async function loadIPs() {
+    const res = await fetch("api.php");
+    const data = await res.json();
+
+    const table = document.getElementById("ipTable");
+    
+    // Remove linhas antigas (menos o cabeçalho)
+    table.querySelectorAll("tr:not(:first-child)").forEach(tr => tr.remove());
+
+    for (const ip in data) {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${ip}</td>
+            <td>${data[ip].requests}</td>
+            <td>${data[ip].first_visit}</td>
+            <td>${data[ip].last_visit}</td>
+        `;
+        table.appendChild(row);
+    }
+}
+
+// Carrega automaticamente ao abrir
+loadIPs();
+</script>
+
+</body>
+</html>
